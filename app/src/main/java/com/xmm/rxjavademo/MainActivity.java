@@ -2,24 +2,30 @@ package com.xmm.rxjavademo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action9;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
  * https://gank.io/post/560e15be2dca930e00da1083
  * https://www.cnblogs.com/liushilin/p/6164901.html
+ * 常用操作符:https://www.jianshu.com/p/3fdd9ddb534b
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -39,32 +45,89 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 onclick();
 //                observable2.subscribe(observer);
-//                observable2.subscribe(subscriber);
+//                observable
+//                        .throttleWithTimeout(2000,TimeUnit.MILLISECONDS)
+//                        .subscribe(subscriber);
 
 //                observable2.subscribe(onNextAction);
                     //java.lang.String cannot be cast to java.lang.Throwable
 //                observable2.subscribe(onErrorAction);
             }
         });
+
     }
+
+
 
     private void onclick(){
         //打印字符串
-        Observable.from(s)
+        Subscription subscribe = Observable.from(s)
+
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        textView.setText(s+","+textView.getText().toString());
+                        textView.setText(s + "," + textView.getText().toString());
                     }
                 });
 
-    }
-    /* 3. 线程控制 —— Scheduler (一) */
-    /* 3. 线程控制 —— Scheduler (一) */
+        /* 变换 —— map */
+        /**
+         * map 是 一对一 转换
+         * 将输入的字符串转化为bitmap
+         * FuncX对应又返回的ActionX
+         */
+//        Observable.just("")
+//                .throttleFirst(1000, TimeUnit.SECONDS)
+//                .map(new Func1<String, Bitmap>() {
+//                    @Override
+//                    public Bitmap call(String s) {
+//                        return null;
+//                    }
+//                }).subscribe(new Action1<Bitmap>() {
+//            @Override
+//            public void call(Bitmap bitmap) {
+//
+//            }
+//        });
+        //转换的原理是内部实现lift方法。通过新建observable 关联原有的 去了
+//        observable.lift(new Observable.Operator<String, Integer>() {
+//            @Override
+//            public Subscriber<? super Integer> call(final Subscriber<? super String> subscriber) {
+//                // 将事件序列中的 Integer 对象转换为 String 对象
+//                return new Subscriber<Integer>() {
+//                    @Override
+//                    public void onNext(Integer integer) {
+//                        subscriber.onNext("" + integer);
+//                    }
+//
+//                    @Override
+//                    public void onCompleted() {
+//                        subscriber.onCompleted();
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        subscriber.onError(e);
+//                    }
+//                };
+//            }
+//        });
 
-    /* 4) 场景示例 */
+        /**
+         * flatMap 一对多转换
+         */
+
+
+        /* 变换 —— map  */
+
+    }
+    /* 线程控制 —— Scheduler (一) */
+
+    /* 线程控制 —— Scheduler (一) */
+
+    /* 场景示例 */
     String[] s = new String[]{"zhangsan","lisi"};
 
 
